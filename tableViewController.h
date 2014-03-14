@@ -13,4 +13,5 @@
 @interface tableViewController : UITableViewController
 
 @end
-NSMutableArray *pirates = [[NSMutableArray alloc] init];
+
+NSMutableArray *pirates;
