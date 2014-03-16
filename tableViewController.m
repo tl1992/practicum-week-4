@@ -31,7 +31,7 @@
 {
     [super viewDidLoad];
     
-    pirates = [[NSMutableArray alloc] init];
+    self.pirates = [[NSMutableArray alloc] init];
     [self loadJsonData];
     
     // Uncomment the following line to preserve selection between presentations.
@@ -73,32 +73,27 @@
     return cell;
 }
 
--(void)loadJsonData
+- (void) loadJsonData
 {
     //Create an URL
     NSURL *url = [NSURL URLWithString:@"http://athena.fhict.nl/users/i886625/pirates.json"];
-    //Sometimes servers return a wrong header. Use this to add a new accepted type
-    [AFJSONRequestOperation addAcceptableContentTypes:[NSSet setWithObject:@"application/x-javascript"]];
     
-    //Create a request object with theurl
-    NSURLRequest *request = [NSURLRequest requestWithURL:url];
+    AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
+    manager.responseSerializer.acceptableContentTypes = [NSSet setWithObject:@"application/x-javascript"];
+    [manager GET:url parameters:nil success:^(AFHTTPRequestOperation *operation, id JSON) {
+        [self parseJsonData:JSON];
+        
+        NSLog(@"JSON: %@", JSON);
+    } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+        NSLog(@"Error: %@", error);
+    }];
     
-    //Create the JSON operation. The ^ blocks are executed when loading is done.
-    AFJSONRequestOperation *operation = [AFJSONRequestOperation JSONRequestOperationWithRequest:request {
-      //Do something with the JSON data, like parsing
-      [self parseJSONData:JSON];
-    }
-    failure:^(NSURLRequest*request,NSHTTPURLResponse*response,NSError*error,id JSON){
-      //Do something with the error
-      NSLog(@"Error :%@",response);
-                                             
-     }];
+ 
     
-    //Start the operation
-    [operation start];
+
 }
 
--(void)parseJSONData:(id) JSON
+-(void)parseJsonData:(id) JSON
 {
     //Loop through all objects in JSON array
     for (NSDictionary *dict in JSON) {
@@ -112,7 +107,7 @@
         pirate.comments = [dict objectForKey:@"comments"];
         
         //Add the pirates to the array
-        [pirates addObject:pirate];
+        [self.pirates addObject:pirate];
     }
     [self.tableView reloadData];
 }
