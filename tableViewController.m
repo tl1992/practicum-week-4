@@ -147,4 +147,16 @@
     
     return cell;
 }
+
+- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender{
+    
+    //Find the selected pirate
+    NSIndexPath *selectedRow = [self.tableView indexPathForSelectedRow];
+    Pirate *selectedPirate =  [self.pirates objectAtIndex:selectedRow.row];
+    //Pass the selected pirate to the next viewcontroller
+    detailsViewController *controller = segue.destinationViewController;
+    controller.selectedPirate = selectedPirate;
+    
+}
+
 @end
