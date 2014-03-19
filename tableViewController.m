@@ -7,7 +7,6 @@
 //
 
 #import "tableViewController.h"
-
 #import "AFNetworking.h" 
 #import "Pirate.h" 
 #import "DetailsViewController.h"
@@ -27,19 +26,7 @@
     return self;
 }
 
-- (void)viewDidLoad
-{
-    [super viewDidLoad];
-    
-    self.pirates = [[NSMutableArray alloc] init];
-    [self loadJsonData];
-    
-    // Uncomment the following line to preserve selection between presentations.
-    // self.clearsSelectionOnViewWillAppear = NO;
- 
-    // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
-    // self.navigationItem.rightBarButtonItem = self.editButtonItem;
-}
+
 
 - (void)didReceiveMemoryWarning
 {
@@ -53,48 +40,61 @@
 {
 #warning Potentially incomplete method implementation.
     // Return the number of sections.
-    return 0;
+    return 1;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
 #warning Incomplete method implementation.
     // Return the number of rows in the section.
-    return 0;
-}
-
-- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    static NSString *CellIdentifier = @"Cell";
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier forIndexPath:indexPath];
-    
-    // Configure the cell...
-    
-    return cell;
+    return _pirates.count;
 }
 
 - (void) loadJsonData
 {
-    //Create an URL
-    NSURL *url = [NSURL URLWithString:@"http://athena.fhict.nl/users/i886625/pirates.json"];
+    NSLog(@"test inside loadJsonData");
     
-    AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
-    manager.responseSerializer.acceptableContentTypes = [NSSet setWithObject:@"application/x-javascript"];
-    [manager GET:url parameters:nil success:^(AFHTTPRequestOperation *operation, id JSON) {
-        [self parseJsonData:JSON];
+    //Create URL
+    
+    NSURL* url = [NSURL URLWithString:@"http://athena.fhict.nl/users/i282933/pirates.json"];
+    
+    //Sometimes servers return a wrong header. Use thi to add a new accepted type
+    
+    NSURLRequest* request = [NSURLRequest requestWithURL:url];
+    
+    AFHTTPRequestOperation* operation = [[AFHTTPRequestOperation alloc] initWithRequest:request];
+    
+    operation.responseSerializer = [AFJSONResponseSerializer serializer];
+    
+    operation.responseSerializer.acceptableContentTypes = [NSSet setWithObject:@"application/x-javascript"];
+    
+    [operation setCompletionBlockWithSuccess:^(AFHTTPRequestOperation *operation, id responseObject)
+     
+     {
+         
+         NSLog(@"%@",responseObject);
+         
+         [self parseJSONData:responseObject];
+         
         
-        NSLog(@"JSON: %@", JSON);
-    } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-        NSLog(@"Error: %@", error);
-    }];
+         
+     } failure:^(AFHTTPRequestOperation *operation, NSError *error)
+     
+     {
+         
+         NSLog(@"Error: %@", error);
+         
+     }
+     
+     ];
     
- 
+    [operation start];
     
 
 }
-
--(void)parseJsonData:(id) JSON
+-(void)parseJSONData:(id) JSON
 {
+      NSLog(@"test inside parseJSONData");
     //Loop through all objects in JSON array
     for (NSDictionary *dict in JSON) {
         //Create a pirate object where thejsondata can be stored
@@ -112,4 +112,39 @@
     [self.tableView reloadData];
 }
 
+- (void)viewDidLoad
+{
+    NSLog(@"test inside viewDidLoad");
+    //[super viewDidLoad];
+    
+    [super viewDidLoad];
+    
+    self.pirates = [[NSMutableArray alloc] init];
+    [self loadJsonData];
+    
+}
+
+
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    NSLog(@"test inside cellForRowAtIndexPath");
+    //Get the cell. Note that this name is the same as in the storyboard
+    static NSString *CellIdentifier = @"Cell";
+    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier forIndexPath:indexPath];
+    
+    //Set the correct name in the cell.
+    //Do so by looking up the row in indexpath and choosing the same element in the array
+    NSInteger currentRow = indexPath.row;
+    Pirate * currentPirate = [self.pirates objectAtIndex:currentRow];
+    
+    NSString *textForCell = currentPirate.name;
+    
+    //Set the text in the cell
+    cell.textLabel.text = textForCell;
+    
+    NSLog(@"%@",currentPirate.name);
+
+    
+    return cell;
+}
 @end

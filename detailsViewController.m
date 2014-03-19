@@ -34,5 +34,14 @@
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
 }
+-(void) viewDidAppear:(BOOL)animated
+{
+    self.name.text = self.selectedPirate.name;
+    self.life.text = self.selectedPirate.life;
+    self.years.text = self.selectedPirate.active;
+    self.country.text = self.selectedPirate.countryOfOrigin;
+    self.comments.text = self.selectedPirate.comments;
+    //Todo set the other UI elements
+}
 
 @end

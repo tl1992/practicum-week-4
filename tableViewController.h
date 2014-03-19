@@ -13,6 +13,8 @@
 @interface tableViewController : UITableViewController
 
 @property NSMutableArray *pirates;
+- (void) parseJSONData:(id) JSON;
+- (void) loadJsonData;
 
 @end
 
